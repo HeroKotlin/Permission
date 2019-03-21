@@ -9,6 +9,8 @@ import java.lang.Exception
 
 class Permission(private val requestCode: Int, private val permissions: List<String>) {
 
+    var onRequestPermissions: ((Activity, permissions: Array<out String>, Int) -> Unit)? = null
+
     var onPermissionsGranted: (() -> Unit)? = null
 
     var onPermissionsDenied: (() -> Unit)? = null
@@ -19,7 +21,7 @@ class Permission(private val requestCode: Int, private val permissions: List<Str
 
     var onExternalStorageNotReadable: (() -> Unit)? = null
 
-    private lateinit var onRequestPermissionsComplete: () -> Unit
+    private var onRequestPermissionsComplete: (() -> Unit)? = null
 
     fun checkExternalStorageWritable(): Boolean {
         if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
@@ -59,11 +61,12 @@ class Permission(private val requestCode: Int, private val permissions: List<Str
 
         if (list.isNotEmpty()) {
             onRequestPermissionsComplete = callback
-            ActivityCompat.requestPermissions(
-                activity,
-                list,
-                requestCode
-            )
+            if (onRequestPermissions != null) {
+                onRequestPermissions?.invoke(activity, list, requestCode)
+            }
+            else {
+                ActivityCompat.requestPermissions(activity, list, requestCode)
+            }
             return
         }
 
@@ -85,7 +88,9 @@ class Permission(private val requestCode: Int, private val permissions: List<Str
         }
 
         onPermissionsGranted?.invoke()
-        onRequestPermissionsComplete()
+
+        onRequestPermissionsComplete?.invoke()
+        onRequestPermissionsComplete = null
 
     }
 
