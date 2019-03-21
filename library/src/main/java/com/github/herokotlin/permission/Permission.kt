@@ -9,7 +9,7 @@ import java.lang.Exception
 
 class Permission(private val requestCode: Int, private val permissions: List<String>) {
 
-    var onRequestPermissions: ((Activity, permissions: Array<out String>, Int) -> Unit)? = null
+    var onRequestPermissions: ((Activity, Array<out String>, Int) -> Unit)? = null
 
     var onPermissionsGranted: (() -> Unit)? = null
 
