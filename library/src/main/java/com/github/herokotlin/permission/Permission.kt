@@ -40,7 +40,7 @@ class Permission(private val requestCode: Int, private val permissions: List<Str
         return false
     }
 
-    fun requestPermissions(activity: Activity, callback: () -> Unit) {
+    fun requestPermissions(activity: Activity, callback: (() -> Unit)? = null): Boolean {
 
         var list = arrayOf<String>()
 
@@ -56,7 +56,7 @@ class Permission(private val requestCode: Int, private val permissions: List<Str
         }
         catch (e: Exception) {
             onPermissionsNotGranted?.invoke()
-            return
+            return false
         }
 
         if (list.isNotEmpty()) {
@@ -67,10 +67,12 @@ class Permission(private val requestCode: Int, private val permissions: List<Str
             else {
                 ActivityCompat.requestPermissions(activity, list, requestCode)
             }
-            return
+            return false
         }
 
-        callback()
+        callback?.invoke()
+
+        return true
 
     }
 
