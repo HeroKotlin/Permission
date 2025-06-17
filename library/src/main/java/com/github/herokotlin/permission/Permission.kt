@@ -82,7 +82,7 @@ class Permission(private val requestCode: Int, private val permissions: List<Str
             return
         }
 
-        for (i in 0 until permissions.size) {
+        for (i in permissions.indices) {
             if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                 onPermissionsDenied?.invoke()
                 return
